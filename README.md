@@ -44,9 +44,9 @@ Livox SDK2 communication protocol opens to all users. It is the communication pr
 2. Preparation:
 
 ```cmd
-> git clone https://github.com/Livox-SDK/Livox-SDK2.git
+> git clone https://github.com/Lzzz666/Livox-MID360.git
 > cd Livox-SDK2
-> md build && cd build
+> //build in vscode 
 ```
 
 3. Generate a project
