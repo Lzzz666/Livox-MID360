@@ -114,9 +114,11 @@ example: (you need to set your host_ip and check the lidar_ip)
 # 4. Get Raw Data (CloudPoint, IMUPoint, Time Stamp)
 in /samples/livox_lidar_quick_start/main.cpp
 ### get CloudPoint data
-![image](https://github.com/user-attachments/assets/1f3e3dd4-9a88-4610-8a9c-74ba17d1bad0)
+![image](https://github.com/user-attachments/assets/d594b7f2-4cd9-4746-b316-766955b82e93)
+
 ### get IMU data
-![image](https://github.com/user-attachments/assets/926fdf65-1f5c-4031-91d1-46c85fdc4bbb)
+![image](https://github.com/user-attachments/assets/5b457158-1e14-420c-9718-b878a412a5ca)
+
 
 
 # 5. Download as a .csv document
