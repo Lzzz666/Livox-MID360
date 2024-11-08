@@ -92,7 +92,7 @@ std::ofstream openCsvFile(int isPointCloud) {
     return csv_file;
 }
 
-void PointCloudSaveAsCsv(LivoxLidarCartesianHighRawPoint *p_point_data, int dot_num, uint64_t timestamp_64){
+void PointCloudSaveAsCsv(LivoxLidarCartesianHighRawPoint *p_point_data, int dot_num, float timestamp_64){
   int isPointCloud = 1;
   std::ofstream csv_file = openCsvFile(isPointCloud);
 
@@ -116,7 +116,7 @@ void PointCloudSaveAsCsv(LivoxLidarCartesianHighRawPoint *p_point_data, int dot_
   }
   csv_file.close();  
 }
-void ImuCloudSaveAsCsv(LivoxLidarImuRawPoint *imu_point_data, int dot_num, uint64_t timestamp_64){
+void ImuCloudSaveAsCsv(LivoxLidarImuRawPoint *imu_point_data, int dot_num, float timestamp_64){
   int isPointCloud = 0;
   std::ofstream csv_file = openCsvFile(isPointCloud);
 
@@ -146,7 +146,8 @@ void PointCloudCallback(uint32_t handle, const uint8_t dev_type, LivoxLidarEther
       timestamp_64 |= static_cast<uint64_t>(data->timestamp[i]) << ((i) * 8); //先轉成 uint64_t 再左移會比較準確及安全
     }
     printf("PointCloud_timestamp: %llu\n", timestamp_64);
-    PointCloudSaveAsCsv(p_point_data, data->dot_num, timestamp_64);
+    double timestamp_float = static_cast<double>(timestamp_64) / 10.0;
+    PointCloudSaveAsCsv(p_point_data, data->dot_num, timestamp_float);
   }
   else if (data->data_type == kLivoxLidarCartesianCoordinateLowData) {
     LivoxLidarCartesianLowRawPoint *p_point_data = (LivoxLidarCartesianLowRawPoint *)data->data;
@@ -174,13 +175,13 @@ void ImuDataCallback(uint32_t handle, const uint8_t dev_type,  LivoxLidarEtherne
       
       printf("IMU_timestamp: %llu\n", timestamp_64);
       // printf("IMU_time_interval: %d * 0.1 us\n", data->time_interval);
-
+      double timestamp_float = static_cast<double>(timestamp_64) / 10.0;
       for (uint32_t i = 0; i < data->dot_num; i++) {
         printf("Imu Point %d: gyro_x: %f, gyro_y: %f, gyro_z: %f, acc_x: %f, acc_y: %f, acc_z: %f\n", i, 
           imu_point_data[i].gyro_x, imu_point_data[i].gyro_y, imu_point_data[i].gyro_z, 
           imu_point_data[i].acc_x, imu_point_data[i].acc_y, imu_point_data[i].acc_z);
       }
-      ImuCloudSaveAsCsv(imu_point_data, data->dot_num, timestamp_64);
+      ImuCloudSaveAsCsv(imu_point_data, data->dot_num, timestamp_float);
     }
   }
 }
