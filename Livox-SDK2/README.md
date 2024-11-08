@@ -313,3 +313,8 @@ You can get support from Livox via:
 * Send an email to cs@livoxtech.com, appended with detailed description for your problem and your setup;
 * Raise a github issue
 
+# 6. Data info
+
+- frame_cnt
+- tag
+- timestamp:　(origin) ns to ms. 
