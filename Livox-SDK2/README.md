@@ -315,6 +315,6 @@ You can get support from Livox via:
 
 # 6. Data info
 
-- frame_cnt
-- tag
+- frame_cnt : 待補充
+- tag : 待補充
 - timestamp:　(origin) ns to ms. 
