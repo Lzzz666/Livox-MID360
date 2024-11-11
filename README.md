@@ -136,12 +136,20 @@ typedef struct {
   uint16_t time_interval;     // 時間間隔，單位是 0.1 微秒（us），這可能表示該數據包中的點之間的時間間隔。
   uint16_t dot_num;           // 點雲數據的點數量，表示該數據包中包含了多少個點。
   uint16_t udp_cnt;           // UDP 數據包計數器，用於追蹤或標記這個數據包是該系列數據包中的第幾個。
-  uint8_t frame_cnt;          // fps
+  uint8_t frame_cnt;          // fps, 對於非重複掃描，此字段無效
   uint8_t data_type;
   uint8_t time_type;
   uint8_t rsvd[12];
   uint32_t crc32;             // 這是數據包的 CRC32 校驗碼，用來檢測數據在傳輸過程中是否損壞。
-  uint8_t timestamp[8];       // 8 字節的時間戳 可能是 64 位的納秒或微秒精度
+  uint8_t timestamp[8];       // 8 字節的時間戳 64 位的 ns 精度
   uint8_t data[1];             /**< Point cloud data. */
 } LivoxLidarEthernetPacket;
 ```
+## tag :   
+![企业微信截图_17306845399751](https://github.com/user-attachments/assets/a8dfdd67-531e-4b0a-96c5-f1cbcb62f1f8)  
+
+## CSV file column:  
+![image](https://github.com/user-attachments/assets/ed39ebf5-fc03-48b2-8b48-e7eb0f148a7a)  
+note: the csv file will be stored in **Livox-SDK2\\build\\samples\\livox_lidar_quick_start\\Debug(or Release)\\**
+
+
