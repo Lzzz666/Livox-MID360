@@ -41,7 +41,7 @@
 #include <fstream>
 #include <ctime>
 #include <sstream>
-
+#include <iomanip>
 bool isFileEmpty(const std::string& filename) {
     std::ifstream file(filename, std::ios::ate); // 開啟檔案並移動到檔案末尾
     return file.tellg() == 0; // 如果檔案大小為 0，則檔案為空
@@ -92,7 +92,7 @@ std::ofstream openCsvFile(int isPointCloud) {
     return csv_file;
 }
 
-void PointCloudSaveAsCsv(LivoxLidarCartesianHighRawPoint *p_point_data, int dot_num, float timestamp_64){
+void PointCloudSaveAsCsv(LivoxLidarCartesianHighRawPoint *p_point_data, int dot_num, double timestamp_64){
   int isPointCloud = 1;
   std::ofstream csv_file = openCsvFile(isPointCloud);
 
@@ -111,27 +111,30 @@ void PointCloudSaveAsCsv(LivoxLidarCartesianHighRawPoint *p_point_data, int dot_
           phi = atan2(static_cast<double>(y), static_cast<double>(x)); 
       }
 
-      printf("tag: %d Point %d: x: %u, y: %u, z: %u, reflectivity: %u,r: %f,theta: %f, phi: %f\n",p_point_data->tag, i, x, y, z, reflectivity,r,theta,phi);
-      csv_file << index << "," << timestamp_64 << "," << x << "," << y << "," << z << "," << reflectivity << "," << r << "," << theta << "," << phi <<"\n";
+      printf("timestamp_ms: %lf Point %d: x: %u, y: %u, z: %u, reflectivity: %u,r: %f,theta: %f, phi: %f\n",timestamp_64, i, x, y, z, reflectivity,r,theta,phi);
+      csv_file << index << "," 
+         << std::fixed << std::setprecision(3)  // 設置小數點後 3 位
+         << static_cast<double>(timestamp_64) << "," 
+         << x << "," << y << "," << z << "," << reflectivity << "," << r << "," << theta << "," << phi << "\n";
   }
   csv_file.close();  
 }
-void ImuCloudSaveAsCsv(LivoxLidarImuRawPoint *imu_point_data, int dot_num, float timestamp_64){
+void ImuCloudSaveAsCsv(LivoxLidarImuRawPoint *imu_point_data, int dot_num, double timestamp_64){
   int isPointCloud = 0;
   std::ofstream csv_file = openCsvFile(isPointCloud);
+  printf("data_num: %d\n", dot_num);
 
-  for (int i = 0; i < dot_num; i++) {
-      int index = i;
-      double gyro_x = imu_point_data[i].gyro_x;
-      double gyro_y = imu_point_data[i].gyro_y;
-      double  gyro_z = imu_point_data[i].gyro_z;
-      double  acc_x = imu_point_data[i].acc_x;
-      double  acc_y = imu_point_data[i].acc_y;
-      double  acc_z = imu_point_data[i].acc_z;
+  double gyro_x = imu_point_data[0].gyro_x;
+  double gyro_y = imu_point_data[0].gyro_y;
+  double  gyro_z = imu_point_data[0].gyro_z;
+  double  acc_x = imu_point_data[0].acc_x;
+  double  acc_y = imu_point_data[0].acc_y;
+  double  acc_z = imu_point_data[0].acc_z;
 
-      printf("IMU Point %d: gyro_x: %f, gyro_y: %f, gyro_z: %f, acc_x: %f, acc_y: %f, acc_z: %f\n", i, gyro_x, gyro_y, gyro_z, acc_x, acc_y, acc_z);
-      csv_file << index << "," << timestamp_64 << "," << gyro_x << "," << gyro_y << "," << gyro_z << "," << acc_x << "," << acc_y << "," << acc_z <<"\n";
-  }
+  printf("IMU Point: gyro_x: %f, gyro_y: %f, gyro_z: %f, acc_x: %f, acc_y: %f, acc_z: %f\n", gyro_x, gyro_y, gyro_z, acc_x, acc_y, acc_z);
+  csv_file << std::fixed << std::setprecision(3)  // 設置小數點後 3 位
+      << static_cast<double>(timestamp_64) << "," << gyro_x << "," << gyro_y << "," << gyro_z << "," << acc_x << "," << acc_y << "," << acc_z <<"\n";
+  
   csv_file.close();  
 }
 void PointCloudCallback(uint32_t handle, const uint8_t dev_type, LivoxLidarEthernetPacket* data, void* client_data) {
@@ -145,9 +148,8 @@ void PointCloudCallback(uint32_t handle, const uint8_t dev_type, LivoxLidarEther
     for(int i = 0; i < 8; i++){
       timestamp_64 |= static_cast<uint64_t>(data->timestamp[i]) << ((i) * 8); //先轉成 uint64_t 再左移會比較準確及安全
     }
-    printf("PointCloud_timestamp: %llu\n", timestamp_64);
-    double timestamp_float = static_cast<double>(timestamp_64) / 10.0;
-    PointCloudSaveAsCsv(p_point_data, data->dot_num, timestamp_float);
+    double timestamp_ms = static_cast<double>(timestamp_64) / 1e6;
+    PointCloudSaveAsCsv(p_point_data, data->dot_num, timestamp_ms);
   }
   else if (data->data_type == kLivoxLidarCartesianCoordinateLowData) {
     LivoxLidarCartesianLowRawPoint *p_point_data = (LivoxLidarCartesianLowRawPoint *)data->data;
@@ -175,7 +177,7 @@ void ImuDataCallback(uint32_t handle, const uint8_t dev_type,  LivoxLidarEtherne
       
       printf("IMU_timestamp: %llu\n", timestamp_64);
       // printf("IMU_time_interval: %d * 0.1 us\n", data->time_interval);
-      double timestamp_float = static_cast<double>(timestamp_64) / 10.0;
+      double timestamp_float = static_cast<double>(timestamp_64) / 1000.0;
       for (uint32_t i = 0; i < data->dot_num; i++) {
         printf("Imu Point %d: gyro_x: %f, gyro_y: %f, gyro_z: %f, acc_x: %f, acc_y: %f, acc_z: %f\n", i, 
           imu_point_data[i].gyro_x, imu_point_data[i].gyro_y, imu_point_data[i].gyro_z, 
@@ -317,16 +319,12 @@ int main(int argc, const char *argv[]) {
   printf("1: PointCloud\n");
   printf("2: ImuData\n");
 
-  int choose;
-  std::cin >> choose;
 
-  if(choose == 1){
-    SetLivoxLidarPointCloudCallBack(PointCloudCallback, nullptr);
-  }else if(choose == 2){
-    SetLivoxLidarImuDataCallback(ImuDataCallback, nullptr);
-  }else{
-    printf("Invalid input\n");
-  }
+
+  SetLivoxLidarPointCloudCallBack(PointCloudCallback, nullptr);
+
+  // SetLivoxLidarImuDataCallback(ImuDataCallback, nullptr);
+
   
   SetLivoxLidarInfoCallback(LivoxLidarPushMsgCallback, nullptr);
   
