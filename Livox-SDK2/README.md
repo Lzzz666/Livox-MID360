@@ -1,4 +1,4 @@
-# 1. Introduction
+# 1. Introduction (Official)
 
 Livox SDK2 is a software development kit designed for all Livox lidars such as HAP and Mid-360. It is developed based on C/C++ following Livox SDK2 Communication Protocol, and provides easy-to-use C style APIs. With the Livox SDK2, users can quickly connect to the Livox Lidars and receive point cloud data.
 
@@ -313,8 +313,3 @@ You can get support from Livox via:
 * Send an email to cs@livoxtech.com, appended with detailed description for your problem and your setup;
 * Raise a github issue
 
-# 6. Data info
-
-- frame_cnt : 待補充
-- tag : 待補充
-- timestamp:　(origin) ns to ms. 
