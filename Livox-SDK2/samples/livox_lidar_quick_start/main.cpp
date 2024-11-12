@@ -315,12 +315,6 @@ int main(int argc, const char *argv[]) {
   }
 
 
-  printf("choose the data type you want to receive:\n");
-  printf("1: PointCloud\n");
-  printf("2: ImuData\n");
-
-
-
   SetLivoxLidarPointCloudCallBack(PointCloudCallback, nullptr);
 
   // SetLivoxLidarImuDataCallback(ImuDataCallback, nullptr);
