@@ -148,4 +148,5 @@ typedef struct {
 ![image](https://github.com/user-attachments/assets/ed39ebf5-fc03-48b2-8b48-e7eb0f148a7a)  
 note: the csv file will be stored in **Livox-SDK2\\build\\samples\\livox_lidar_quick_start\\Debug(or Release)\\**
 
-
+## Timestamp
+Starting from the moment the machine is powered on, the original timestamp is measured in nanoseconds and is converted to milliseconds.
